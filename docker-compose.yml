@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: my-turborepo-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: my-turborepo-api
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  user:
+    build:
+      context: .
+      dockerfile: apps/user/Dockerfile
+    container_name: my-turborepo-user
+    ports:
+      - "3003:80"
+    restart: unless-stopped
+
+  merchant:
+    build:
+      context: .
+      dockerfile: apps/merchant/Dockerfile
+    container_name: my-turborepo-merchant
+    ports:
+      - "3004:80"
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    container_name: my-turborepo-dashboard
+    ports:
+      - "3005:80"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

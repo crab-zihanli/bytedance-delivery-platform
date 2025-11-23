@@ -16,7 +16,7 @@ const App = () => (
         alt="TypeScript logo"
       />
     </a>
-    <Header title="Web" />
+    <Header title="用户端" />
     <div className="card">
       <Counter />
     </div>
