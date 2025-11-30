@@ -33,7 +33,7 @@ COPY apps/api/package.json ./apps/api/
 COPY apps/api/dist ./apps/api/dist
 
 # Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --recursive
 
 WORKDIR /app/apps/api
 
